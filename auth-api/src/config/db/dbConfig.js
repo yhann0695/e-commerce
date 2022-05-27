@@ -13,7 +13,7 @@ const sequelize = new Sequelize("auth-db", "postgres", "123456", {
     }
 });
 
-sequelize.authencate().then(() => {
+sequelize.authenticate().then(() => {
     console.info("Connection has been established successfully.");
 }).catch(err => {
     console.error("Unable to connect to the database:", err.message);

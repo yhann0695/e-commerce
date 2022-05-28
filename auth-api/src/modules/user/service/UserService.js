@@ -1,6 +1,6 @@
-import UserRepository from '../repository/UserRepository';
-import * as utility from '../../../utility';
-import UserException from '../exception/UserException';
+import UserRepository from '../repository/UserRepository.js';
+import * as utility from '../../../utility.js';
+import UserException from '../exception/UserException.js';
 
 class UserService {
 
@@ -8,7 +8,7 @@ class UserService {
         try {
             const { email } = req.params;
             this.validateRequestEmail(email); 
-            let user = await UsuarioRepository.findByEmail(email);
+            let user = await UserRepository.findByEmail(email);
             this.validateUserNotFound(user);
             return { 
                 status: utility.SUCCESS,

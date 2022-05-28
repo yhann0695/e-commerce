@@ -6,6 +6,6 @@ export const UNAUTHORIZED = 401;
 export const FORBIDDEN = 403;
 export const INTERVAL_SERVER_ERROR = 500;
 
-export const apiSecret = env.API_SECRET 
+export const API_SECRET = env.API_SECRET 
     ? env.API_SECRET 
     : 'YXV0aC1hcGktc2VjcmV0LWRldi0xMjM0NTY=';

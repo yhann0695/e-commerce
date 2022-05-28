@@ -1,5 +1,6 @@
 import UserRepository from '../repository/UserRepository';
 import * as utility from '../../../utility';
+import UserException from '../exception/UserException';
 
 class UserService {
 
@@ -7,10 +8,8 @@ class UserService {
         try {
             const { email } = req.params;
             this.validateRequestEmail(email); 
-            let user = UsuarioRepository.findByEmail(email);
-            if(!user) {
-
-            }
+            let user = await UsuarioRepository.findByEmail(email);
+            this.validateUserNotFound(user);
             return { 
                 status: utility.SUCCESS,
                 user: {
@@ -29,7 +28,13 @@ class UserService {
 
     validateRequestEmail(email) {
         if(!email) {
-            throw new Error("User email was not informed.");
+            throw new UserException(utility.BAD_REQUEST, "User email was not informed.");
+        }
+    }
+
+    validateUserNotFound(user) {
+        if(!user) {
+            throw new UserException(utility.BAD_REQUEST, "User was not found.");
         }
     }
 }

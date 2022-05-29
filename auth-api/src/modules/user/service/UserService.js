@@ -10,9 +10,11 @@ class UserService {
     async findByEmail(req) {
         try {
             const { email } = req.params;
+            const { authUser } = req;
             this.validateRequestEmail(email); 
             let user = await UserRepository.findByEmail(email);
             this.validateUserNotFound(user);
+            this.validateAutheticatedUser(user, authUser);
             return { 
                 status: utility.SUCCESS,
                 user: {
@@ -38,6 +40,12 @@ class UserService {
     validateUserNotFound(user) {
         if(!user) {
             throw new UserException(utility.BAD_REQUEST, "User was not found.");
+        }
+    }
+
+    validateAutheticatedUser(user, authUser) {
+        if(!authUser || user.id !== authUser.id) {
+            throw new UserException(utility.FORBIDDEN, "You cannot see this user data.");
         }
     }
 

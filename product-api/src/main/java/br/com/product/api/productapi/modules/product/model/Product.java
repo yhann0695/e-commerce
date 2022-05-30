@@ -1,12 +1,20 @@
 package br.com.product.api.productapi.modules.product.model;
 
 import br.com.product.api.productapi.modules.category.model.Category;
+import br.com.product.api.productapi.modules.product.dto.ProductRequest;
 import br.com.product.api.productapi.modules.supplier.model.Supplier;
+import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "PRODUCT")
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Product {
 
     @Id
@@ -26,4 +34,21 @@ public class Product {
 
     @Column(name = "PRODUCT_QUANTITY_AVAILABLE", nullable = false)
     private Integer quantityAvailable;
+
+    @Column(name = "PRODUCT_CREATED_AT", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+    public static Product of(ProductRequest request, Supplier supplier, Category category) {
+        return Product.builder()
+                .name(request.getName())
+                .quantityAvailable(request.getQuantityAvailable())
+                .supplier(supplier)
+                .category(category)
+                .build();
+    }
 }

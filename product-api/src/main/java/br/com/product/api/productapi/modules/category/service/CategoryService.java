@@ -16,6 +16,11 @@ public class CategoryService {
 
     private CategoryRepository categoryRepository;
 
+    public Category findById(Integer id) {
+        return categoryRepository.findById(id)
+                .orElseThrow(() -> new ValidationException("There's no category for the given ID."));
+    }
+
     public CategoryResponse create(CategoryRequest request) {
         validateCategoryNameInformed(request);
         var entity= categoryRepository.save(Category.of(request));

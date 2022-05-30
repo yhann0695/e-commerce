@@ -1,5 +1,8 @@
 package br.com.product.api.productapi.modules.product.model;
 
+import br.com.product.api.productapi.modules.category.model.Category;
+import br.com.product.api.productapi.modules.supplier.model.Supplier;
+
 import javax.persistence.*;
 
 @Entity

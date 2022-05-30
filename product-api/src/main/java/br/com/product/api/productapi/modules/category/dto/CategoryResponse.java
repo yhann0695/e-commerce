@@ -1,6 +1,6 @@
-package br.com.product.api.productapi.modules.product.dto.category;
+package br.com.product.api.productapi.modules.category.dto;
 
-import br.com.product.api.productapi.modules.product.model.Category;
+import br.com.product.api.productapi.modules.category.model.Category;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.BeanUtils;

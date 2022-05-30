@@ -1,4 +1,4 @@
-package br.com.product.api.productapi.modules.product.model;
+package br.com.product.api.productapi.modules.supplier.model;
 
 import javax.persistence.*;
 

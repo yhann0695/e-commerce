@@ -1,13 +1,16 @@
 package br.com.product.api.productapi.modules.product.model;
 
 import br.com.product.api.productapi.modules.product.dto.category.CategoryRequest;
-import br.com.product.api.productapi.modules.product.dto.category.CategoryResponse;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.BeanUtils;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "CATEGORY")
+@Getter
+@Setter
 public class Category {
 
     @Id

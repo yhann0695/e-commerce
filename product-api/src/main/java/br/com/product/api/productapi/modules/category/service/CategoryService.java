@@ -8,6 +8,9 @@ import br.com.product.api.productapi.modules.category.repository.CategoryReposit
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Service
@@ -21,10 +24,25 @@ public class CategoryService {
                 .orElseThrow(() -> new ValidationException("There's no category for the given ID."));
     }
 
+    public CategoryResponse findByIdResponse(Integer id) {
+        return CategoryResponse.of(findById(id));
+    }
+
     public CategoryResponse create(CategoryRequest request) {
         validateCategoryNameInformed(request);
         var entity= categoryRepository.save(Category.of(request));
         return CategoryResponse.of(entity);
+    }
+
+    public List<CategoryResponse> findAll() {
+        return categoryRepository.findAll().stream().map(CategoryResponse::of).collect(Collectors.toList());
+    }
+
+    public List<CategoryResponse> findByDescription(String description) {
+        if(isEmpty(description)) {
+            throw new ValidationException("The category description must be informed.");
+        }
+        return categoryRepository.findByDescriptionIgnoreCaseContaining(description).stream().map(CategoryResponse::of).collect(Collectors.toList());
     }
 
     private void validateCategoryNameInformed(CategoryRequest request) {
@@ -32,4 +50,7 @@ public class CategoryService {
             throw new ValidationException("The category description was not informed.");
         }
     }
+
+
+
 }

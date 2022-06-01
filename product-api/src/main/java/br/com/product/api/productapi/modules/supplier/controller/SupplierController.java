@@ -4,10 +4,9 @@ import br.com.product.api.productapi.modules.supplier.dto.SupplierRequest;
 import br.com.product.api.productapi.modules.supplier.dto.SupplierResponse;
 import br.com.product.api.productapi.modules.supplier.service.SupplierService;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/supplier")
@@ -19,5 +18,20 @@ public class SupplierController {
     @PostMapping
     public SupplierResponse create(@RequestBody SupplierRequest request) {
         return supplierService.create(request);
+    }
+
+    @GetMapping
+    public List<SupplierResponse> findAll() {
+        return supplierService.findAll();
+    }
+
+    @GetMapping("/name/{name}")
+    public List<SupplierResponse> findByName(@PathVariable String name) {
+        return supplierService.findByName(name);
+    }
+
+    @GetMapping("/{id}")
+    public SupplierResponse findById(@PathVariable Integer id) {
+        return supplierService.findByIdResponse(id);
     }
 }

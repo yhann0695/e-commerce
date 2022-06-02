@@ -42,6 +42,6 @@ public class ProductController {
 
     @GetMapping("/categoryId/{categoryId}")
     public List<ProductResponse> findByCategoryId(@PathVariable Integer categoryId) {
-        return productService.findBySupplierId(categoryId);
+        return productService.findByCategoryId(categoryId);
     }
 }

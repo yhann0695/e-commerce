@@ -1,6 +1,7 @@
 package br.com.product.api.productapi.modules.supplier.service;
 
 import br.com.product.api.productapi.configuration.exception.ValidationException;
+import br.com.product.api.productapi.modules.product.service.ProductService;
 import br.com.product.api.productapi.modules.supplier.dto.SupplierRequest;
 import br.com.product.api.productapi.modules.supplier.dto.SupplierResponse;
 import br.com.product.api.productapi.modules.supplier.model.Supplier;
@@ -18,6 +19,7 @@ import static org.springframework.util.ObjectUtils.isEmpty;
 public class SupplierService {
 
     private SupplierRepository supplierRepository;
+    private ProductService productService;
 
     public Supplier findById(Integer id) {
         return supplierRepository.findById(id)

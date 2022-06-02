@@ -5,6 +5,7 @@ import br.com.product.api.productapi.modules.category.dto.CategoryRequest;
 import br.com.product.api.productapi.modules.category.dto.CategoryResponse;
 import br.com.product.api.productapi.modules.category.model.Category;
 import br.com.product.api.productapi.modules.category.repository.CategoryRepository;
+import br.com.product.api.productapi.modules.product.service.ProductService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ import static org.springframework.util.ObjectUtils.isEmpty;
 public class CategoryService {
 
     private CategoryRepository categoryRepository;
+    private ProductService productService;
 
     public Category findById(Integer id) {
         return categoryRepository.findById(id)

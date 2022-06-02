@@ -1,5 +1,6 @@
 package br.com.product.api.productapi.modules.supplier.service;
 
+import br.com.product.api.productapi.configuration.exception.SuccessResponse;
 import br.com.product.api.productapi.configuration.exception.ValidationException;
 import br.com.product.api.productapi.modules.product.service.ProductService;
 import br.com.product.api.productapi.modules.supplier.dto.SupplierRequest;
@@ -31,25 +32,32 @@ public class SupplierService {
     }
 
     public List<SupplierResponse> findByName(String name) {
-        if(isEmpty(name)) {
-            throw new ValidationException("The supplier name must be informed.");
-        }
+        validateInformedData(isEmpty(name), "The supplier's name was not informed.");
         return supplierRepository.findByNameIgnoreCaseContaining(name).stream().map(SupplierResponse::of).collect(Collectors.toList());
+    }
+
+    public SupplierResponse create(SupplierRequest request) {
+        validateInformedData(isEmpty(request.getName()), "The supplier's name was not informed.");
+        var entity = supplierRepository.save(Supplier.of(request));
+        return SupplierResponse.of(entity);
     }
 
     public SupplierResponse findByIdResponse(Integer id) {
         return SupplierResponse.of(findById(id));
     }
 
-    public SupplierResponse create(SupplierRequest request) {
-        validateSupplierNameInformed(request.getName());
-        var entity = supplierRepository.save(Supplier.of(request));
-        return SupplierResponse.of(entity);
+    public SuccessResponse delete(Integer id) {
+        validateInformedData(isEmpty(id), "The supplier's ID must be informed.");
+        validateInformedData(productService.existsBySupplierId(id), "You cannot delete this supplier because it's already defined by a product");
+        supplierRepository.deleteById(id);
+        return SuccessResponse.create("The supplier  was deleted.");
     }
 
-    private void validateSupplierNameInformed(String name) {
-        if(isEmpty(name)) {
-            throw new ValidationException("The supplier's name was not informed.");
+    private void validateInformedData(boolean data, String msg) {
+        if(data) {
+            throw new ValidationException(msg);
         }
     }
+
+
 }

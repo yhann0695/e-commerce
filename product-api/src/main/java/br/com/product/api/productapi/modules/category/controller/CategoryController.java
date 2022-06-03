@@ -1,5 +1,6 @@
 package br.com.product.api.productapi.modules.category.controller;
 
+import br.com.product.api.productapi.configuration.exception.SuccessResponse;
 import br.com.product.api.productapi.modules.category.dto.CategoryRequest;
 import br.com.product.api.productapi.modules.category.dto.CategoryResponse;
 import br.com.product.api.productapi.modules.category.service.CategoryService;
@@ -33,5 +34,10 @@ public class CategoryController {
     @GetMapping("/description/{description}")
     public List<CategoryResponse> findByDescription(@PathVariable String description) {
         return categoryService.findByDescription(description);
+    }
+
+    @DeleteMapping("/{id}")
+    public SuccessResponse delete(@PathVariable Integer id) {
+        return categoryService.delete(id);
     }
 }

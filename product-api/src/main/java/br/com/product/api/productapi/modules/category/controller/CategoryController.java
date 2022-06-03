@@ -4,16 +4,18 @@ import br.com.product.api.productapi.configuration.exception.SuccessResponse;
 import br.com.product.api.productapi.modules.category.dto.CategoryRequest;
 import br.com.product.api.productapi.modules.category.dto.CategoryResponse;
 import br.com.product.api.productapi.modules.category.service.CategoryService;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/category")
-@AllArgsConstructor
 public class CategoryController {
 
+    @Lazy
+    @Autowired
     private CategoryService categoryService;
 
     @PostMapping

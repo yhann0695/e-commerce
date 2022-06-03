@@ -11,7 +11,8 @@ import br.com.product.api.productapi.modules.product.repository.ProductRepositor
 import br.com.product.api.productapi.modules.product.validation.Validation;
 import br.com.product.api.productapi.modules.supplier.model.Supplier;
 import br.com.product.api.productapi.modules.supplier.service.SupplierService;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,12 +21,22 @@ import java.util.stream.Collectors;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Service
-@AllArgsConstructor
 public class ProductService {
 
+    @Lazy
+    @Autowired
     private ProductRepository productRepository;
+
+    @Lazy
+    @Autowired
     private SupplierService supplierService;
+
+    @Lazy
+    @Autowired
     private CategoryService categoryService;
+
+    @Lazy
+    @Autowired
     private List<Validation> validations;
 
     public ProductResponse create(ProductRequest request) {

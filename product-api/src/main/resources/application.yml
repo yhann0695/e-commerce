@@ -23,3 +23,7 @@ spring:
     show-sql: true
     properties:
       dialect: org.hibernate.dialect.PostgreSQL14Dialect
+
+app-config:
+  secrets:
+    api-secret: ${API:SECRET:YXV0aC1hcGktc2VjcmV0LWRldi0xMjM0NTY=}

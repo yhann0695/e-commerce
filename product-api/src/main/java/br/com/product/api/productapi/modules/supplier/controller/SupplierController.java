@@ -40,4 +40,10 @@ public class SupplierController {
     public SuccessResponse delete(@PathVariable Integer id) {
         return supplierService.delete(id);
     }
+
+    @PutMapping("/{id}")
+    public SupplierResponse update(@RequestBody SupplierRequest request, @PathVariable Integer id) {
+        return supplierService.update(request, id);
+    }
+
 }

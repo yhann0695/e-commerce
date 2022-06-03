@@ -32,8 +32,19 @@ public class ProductService {
         validate(request);
         Category category = getCategory(request);
         Supplier supplier = getSupplier(request);
-        var product = productRepository.save(Product.of(request, supplier, category));
-        return ProductResponse.of(product);
+        var entity = productRepository.save(Product.of(request, supplier, category));
+        return ProductResponse.of(entity);
+    }
+
+    public ProductResponse update(ProductRequest request, Integer id) {
+        validate(request);
+        validateInformedData(isEmpty(id), "The product's ID must be informed.");
+        Category category = getCategory(request);
+        Supplier supplier = getSupplier(request);
+        var entity = Product.of(request, supplier, category);
+        entity.setId(id);
+        productRepository.save(entity);
+        return ProductResponse.of(entity);
     }
 
     private void validate(ProductRequest request) {

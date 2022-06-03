@@ -40,4 +40,9 @@ public class CategoryController {
     public SuccessResponse delete(@PathVariable Integer id) {
         return categoryService.delete(id);
     }
+
+    @PutMapping("/{id}")
+    public CategoryResponse update(@RequestBody CategoryRequest request, @PathVariable Integer id) {
+        return categoryService.update(request, id);
+    }
 }

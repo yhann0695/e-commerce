@@ -22,6 +22,8 @@ public class SupplierService {
     private SupplierRepository supplierRepository;
     private ProductService productService;
 
+    private static final String NOT_INFORMED_NAME = "The supplier's name was not informed.";
+
     public Supplier findById(Integer id) {
         return supplierRepository.findById(id)
                 .orElseThrow(() -> new ValidationException("There's no supplier for the given ID."));
@@ -32,13 +34,22 @@ public class SupplierService {
     }
 
     public List<SupplierResponse> findByName(String name) {
-        validateInformedData(isEmpty(name), "The supplier's name was not informed.");
+        validateInformedData(isEmpty(name), NOT_INFORMED_NAME);
         return supplierRepository.findByNameIgnoreCaseContaining(name).stream().map(SupplierResponse::of).collect(Collectors.toList());
     }
 
     public SupplierResponse create(SupplierRequest request) {
-        validateInformedData(isEmpty(request.getName()), "The supplier's name was not informed.");
+        validateInformedData(isEmpty(request.getName()), NOT_INFORMED_NAME);
         var entity = supplierRepository.save(Supplier.of(request));
+        return SupplierResponse.of(entity);
+    }
+
+    public SupplierResponse update(SupplierRequest request, Integer id) {
+        validateInformedData(isEmpty(request.getName()), NOT_INFORMED_NAME);
+        validateInformedData(isEmpty(id), "The supplier's ID must be informed.");
+        var entity = Supplier.of(request);
+        entity.setId(id);
+        supplierRepository.save(entity);
         return SupplierResponse.of(entity);
     }
 

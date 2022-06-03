@@ -22,6 +22,8 @@ public class CategoryService {
     private CategoryRepository categoryRepository;
     private ProductService productService;
 
+    private static final String NOT_INFORMED_DESCRIPTION = "The category description was not informed.";
+
     public Category findById(Integer id) {
         return categoryRepository.findById(id)
                 .orElseThrow(() -> new ValidationException("There's no category for the given ID."));
@@ -36,21 +38,30 @@ public class CategoryService {
     }
 
     public CategoryResponse create(CategoryRequest request) {
-        validateInformedData(isEmpty(request.getDescription()), "The category description was not informed.");
+        validateInformedData(isEmpty(request.getDescription()), NOT_INFORMED_DESCRIPTION);
         var entity= categoryRepository.save(Category.of(request));
         return CategoryResponse.of(entity);
     }
 
+    public CategoryResponse update(CategoryRequest request, Integer id) {
+        validateInformedData(isEmpty(request.getDescription()), NOT_INFORMED_DESCRIPTION);
+        validateInformedData(isEmpty(id), "The category ID must be informed.");
+        var entity= Category.of(request);
+        entity.setId(id);
+        categoryRepository.save(entity);
+        return CategoryResponse.of(entity);
+    }
+
     public List<CategoryResponse> findByDescription(String description) {
-        validateInformedData(isEmpty(description), "The category description must be informed.");
+        validateInformedData(isEmpty(description), NOT_INFORMED_DESCRIPTION);
         return categoryRepository.findByDescriptionIgnoreCaseContaining(description).stream().map(CategoryResponse::of).collect(Collectors.toList());
     }
 
     public SuccessResponse delete(Integer id) {
-        validateInformedData(isEmpty(id), "The supplier's ID must be informed.");
+        validateInformedData(isEmpty(id), "The category ID must be informed.");
         validateInformedData(productService.existsByCategoryId(id), "You cannot delete this category because it's already defined by a product");
         categoryRepository.deleteById(id);
-        return SuccessResponse.create("The category  was deleted.");
+        return SuccessResponse.create("The category was deleted.");
     }
 
     private void validateInformedData(boolean data, String msg) {

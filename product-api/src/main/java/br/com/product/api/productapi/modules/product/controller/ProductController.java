@@ -1,5 +1,6 @@
 package br.com.product.api.productapi.modules.product.controller;
 
+import br.com.product.api.productapi.configuration.exception.SuccessResponse;
 import br.com.product.api.productapi.modules.product.dto.ProductRequest;
 import br.com.product.api.productapi.modules.product.dto.ProductResponse;
 import br.com.product.api.productapi.modules.product.service.ProductService;
@@ -43,5 +44,10 @@ public class ProductController {
     @GetMapping("/categoryId/{categoryId}")
     public List<ProductResponse> findByCategoryId(@PathVariable Integer categoryId) {
         return productService.findByCategoryId(categoryId);
+    }
+
+    @DeleteMapping("/{id}")
+    public SuccessResponse delete(@PathVariable Integer id) {
+        return productService.delete(id);
     }
 }

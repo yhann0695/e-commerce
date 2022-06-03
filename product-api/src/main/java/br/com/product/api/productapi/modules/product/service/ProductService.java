@@ -1,5 +1,6 @@
 package br.com.product.api.productapi.modules.product.service;
 
+import br.com.product.api.productapi.configuration.exception.SuccessResponse;
 import br.com.product.api.productapi.configuration.exception.ValidationException;
 import br.com.product.api.productapi.modules.category.model.Category;
 import br.com.product.api.productapi.modules.category.service.CategoryService;
@@ -52,16 +53,12 @@ public class ProductService {
     }
 
     public List<ProductResponse> findByName(String name) {
-        if(isEmpty(name)) {
-            throw new ValidationException("The product name must be informed.");
-        }
+        validateInformedData(isEmpty(name), "The product name must be informed.");
         return productRepository.findByNameIgnoreCaseContaining(name).stream().map(ProductResponse::of).collect(Collectors.toList());
     }
 
     public List<ProductResponse> findBySupplierId(Integer supplierId) {
-        if(isEmpty(supplierId)) {
-            throw new ValidationException("The product supplier ID name must be informed.");
-        }
+        validateInformedData(isEmpty(supplierId), "The product supplier ID name must be informed.");
         return productRepository.findBySupplierId(supplierId).stream().map(ProductResponse::of).collect(Collectors.toList());
     }
 
@@ -74,10 +71,14 @@ public class ProductService {
     }
 
     public List<ProductResponse> findByCategoryId(Integer categoryId) {
-        if(isEmpty(categoryId)) {
-            throw new ValidationException("The product category ID name must be informed.");
-        }
+        validateInformedData(isEmpty(categoryId), "The product category ID name must be informed.");
         return productRepository.findByCategoryId(categoryId).stream().map(ProductResponse::of).collect(Collectors.toList());
+    }
+
+    private void validateInformedData(boolean data, String msg) {
+        if(data) {
+            throw new ValidationException(msg);
+        }
     }
 
     public boolean existsByCategoryId(Integer categoryId) {
@@ -86,6 +87,12 @@ public class ProductService {
 
     public boolean existsBySupplierId(Integer supplierId) {
         return productRepository.existsBySupplierId(supplierId);
+    }
+
+    public SuccessResponse delete(Integer id) {
+        validateInformedData(isEmpty(id), "The product's ID must be informed.");
+        productRepository.deleteById(id);
+        return SuccessResponse.create("The product was deleted.");
     }
 
 }

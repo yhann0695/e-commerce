@@ -14,4 +14,13 @@ public class ExceptionGlobalHandler {
         details.setMessage(exception.getMessage());
         return new ResponseEntity<>(details, HttpStatus.BAD_REQUEST);
     }
+
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(AuthorizationException.class)
+    public ResponseEntity<?> handleAuthorizationException(AuthorizationException exception) {
+        var details = new ExceptionDetails();
+        details.setStatus(HttpStatus.UNAUTHORIZED.value());
+        details.setMessage(exception.getMessage());
+        return new ResponseEntity<>(details, HttpStatus.UNAUTHORIZED);
+    }
 }

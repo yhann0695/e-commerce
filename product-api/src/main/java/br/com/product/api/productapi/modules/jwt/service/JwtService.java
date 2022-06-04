@@ -4,7 +4,6 @@ import br.com.product.api.productapi.configuration.exception.AuthorizationExcept
 import br.com.product.api.productapi.modules.jwt.dto.JwtResponse;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -16,11 +15,12 @@ public class JwtService {
     @Value("${app-config.secrets.api-secret}")
     private String apiSecret;
 
-    private static final String BEARER = "bearer ";
+    private static final String EMPTY_SPACE = " ";
+    private static final Integer TOKEN_INDEX = 1;
 
     public void validateAuthorization(String token) {
+        var accessToken = extractToken(token);
         try {
-           var accessToken = extractToken(token);
            var claims = Jwts.parserBuilder()
                                    .setSigningKey(Keys.hmacShaKeyFor(apiSecret.getBytes()))
                                    .build()
@@ -35,16 +35,16 @@ public class JwtService {
 
     private String extractToken(String token) {
         validateData(isEmpty(token), "The access token was not informed.");
-        boolean containsToken = token.toLowerCase().contains(BEARER);
-        token = token.toLowerCase();
-        return validateData(containsToken, token.replace(BEARER, Strings.EMPTY));
+
+        if(token.contains(EMPTY_SPACE))
+            return token.split(EMPTY_SPACE)[TOKEN_INDEX];
+        return token;
     }
 
-    private String validateData(boolean verify, String response) {
-        if(verify) {
+    private void validateData(boolean verify, String response) {
+        if(verify)
             throw new AuthorizationException(response);
-        }
-        return response;
+
     }
 
 

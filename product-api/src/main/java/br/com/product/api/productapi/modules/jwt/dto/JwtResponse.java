@@ -1,5 +1,6 @@
 package br.com.product.api.productapi.modules.jwt.dto;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,10 +27,6 @@ public class JwtResponse {
     }
 
     private static JwtResponse getJwtResponse(Claims claims) {
-        return JwtResponse.builder()
-                .id((Integer) claims.get("id"))
-                .name((String) claims.get("name"))
-                .email((String) claims.get("email"))
-                .build();
+        return new ObjectMapper().convertValue(claims.get("authUser"), JwtResponse.class);
     }
 }

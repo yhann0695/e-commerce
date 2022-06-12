@@ -30,7 +30,7 @@ spring:
 
   rabbitmq:
     host: ${RABBIT_MQ_HOST:localhost}
-    port: ${RABBIT_MQ_PORT:15672}
+    port: ${RABBIT_MQ_PORT:5672}
     username: ${RABBIT_MQ_USER:guest}
     password: ${RABBIT_MQ_PASSWORD:guest}
 
@@ -44,9 +44,9 @@ app-config:
 
     routingKey:
       product-stock: product-stock-update.routingKey
-        sales-confirmation: sales-confirmation.routingKey
+      sales-confirmation: sales-confirmation.routingKey
 
 
     queue:
       product-stock: product-stock-update.queue
-        sales_confirmation: sales-confirmation.queue
+      sales-confirmation: sales-confirmation.queue

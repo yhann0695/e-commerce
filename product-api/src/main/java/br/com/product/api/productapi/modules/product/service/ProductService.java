@@ -6,6 +6,7 @@ import br.com.product.api.productapi.modules.category.model.Category;
 import br.com.product.api.productapi.modules.category.service.CategoryService;
 import br.com.product.api.productapi.modules.product.dto.ProductRequest;
 import br.com.product.api.productapi.modules.product.dto.ProductResponse;
+import br.com.product.api.productapi.modules.product.dto.ProductStockDTO;
 import br.com.product.api.productapi.modules.product.model.Product;
 import br.com.product.api.productapi.modules.product.repository.ProductRepository;
 import br.com.product.api.productapi.modules.product.validation.Validation;
@@ -115,6 +116,10 @@ public class ProductService {
         validateInformedData(isEmpty(id), "The product's ID must be informed.");
         productRepository.deleteById(id);
         return SuccessResponse.create("The product was deleted.");
+    }
+
+    public void updateProductStock(ProductStockDTO dto) {
+
     }
 
 }

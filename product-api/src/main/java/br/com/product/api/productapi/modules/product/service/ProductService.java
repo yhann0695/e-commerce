@@ -6,9 +6,11 @@ import br.com.product.api.productapi.modules.category.model.Category;
 import br.com.product.api.productapi.modules.category.service.CategoryService;
 import br.com.product.api.productapi.modules.product.dto.ProductRequest;
 import br.com.product.api.productapi.modules.product.dto.ProductResponse;
+import br.com.product.api.productapi.modules.product.dto.ProductSalesResponse;
 import br.com.product.api.productapi.modules.product.dto.ProductStockDTO;
 import br.com.product.api.productapi.modules.product.model.Product;
 import br.com.product.api.productapi.modules.product.repository.ProductRepository;
+import br.com.product.api.productapi.modules.product.sales.client.SalesClient;
 import br.com.product.api.productapi.modules.product.sales.dto.SalesConfirmationDTO;
 import br.com.product.api.productapi.modules.product.sales.enums.SalesStatus;
 import br.com.product.api.productapi.modules.product.sales.rabbitmq.SalesConfirmationSender;
@@ -49,6 +51,9 @@ public class ProductService {
 
     @Autowired
     private SalesConfirmationSender salesConfirmationSender;
+
+    @Autowired
+    private SalesClient salesClient;
 
     public ProductResponse create(ProductRequest request) {
         validate(request);
@@ -163,6 +168,19 @@ public class ProductService {
         dto.getProducts()
                 .forEach(salesProduct ->
                         validateInformedData(isEmpty(salesProduct.getQuantity()) || isEmpty(salesProduct.getProductId()), "The product ID and the quantity must be informed."));
+    }
+
+    public ProductSalesResponse findProductSales(Integer id) {
+        var entity = findById(id);
+
+        try {
+            var sales = salesClient.findSalesByProductId(id)
+                    .orElseThrow(() -> new ValidationException("The sales was not found by this product."));
+            return ProductSalesResponse.of(entity, sales.getSalesId());
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            throw new ValidationException("There was an error trying to get the product's sales.");
+        }
     }
 
 }

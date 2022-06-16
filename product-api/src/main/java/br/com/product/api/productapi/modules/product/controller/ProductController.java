@@ -3,6 +3,7 @@ package br.com.product.api.productapi.modules.product.controller;
 import br.com.product.api.productapi.configuration.exception.SuccessResponse;
 import br.com.product.api.productapi.modules.product.dto.ProductRequest;
 import br.com.product.api.productapi.modules.product.dto.ProductResponse;
+import br.com.product.api.productapi.modules.product.dto.ProductSalesResponse;
 import br.com.product.api.productapi.modules.product.service.ProductService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -54,5 +55,10 @@ public class ProductController {
     @PutMapping("/{id}")
     public ProductResponse update(@RequestBody ProductRequest request, @PathVariable Integer id) {
         return productService.update(request, id);
+    }
+
+    @GetMapping("/{id}/sales")
+    public ProductSalesResponse findProductSales(@PathVariable Integer id) {
+        return productService.findProductSales(id);
     }
 }

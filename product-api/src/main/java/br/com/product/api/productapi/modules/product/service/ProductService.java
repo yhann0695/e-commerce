@@ -9,18 +9,25 @@ import br.com.product.api.productapi.modules.product.dto.ProductResponse;
 import br.com.product.api.productapi.modules.product.dto.ProductStockDTO;
 import br.com.product.api.productapi.modules.product.model.Product;
 import br.com.product.api.productapi.modules.product.repository.ProductRepository;
+import br.com.product.api.productapi.modules.product.sales.dto.SalesConfirmationDTO;
+import br.com.product.api.productapi.modules.product.sales.enums.SalesStatus;
+import br.com.product.api.productapi.modules.product.sales.rabbitmq.SalesConfirmationSender;
 import br.com.product.api.productapi.modules.product.validation.Validation;
 import br.com.product.api.productapi.modules.supplier.model.Supplier;
 import br.com.product.api.productapi.modules.supplier.service.SupplierService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
+@Slf4j
 @Service
 public class ProductService {
 
@@ -39,6 +46,9 @@ public class ProductService {
     @Lazy
     @Autowired
     private List<Validation> validations;
+
+    @Autowired
+    private SalesConfirmationSender salesConfirmationSender;
 
     public ProductResponse create(ProductRequest request) {
         validate(request);
@@ -72,17 +82,17 @@ public class ProductService {
     }
 
     public List<ProductResponse> findAll() {
-        return productRepository.findAll().stream().map(ProductResponse::of).collect(Collectors.toList());
+        return productRepository.findAll().stream().map(ProductResponse::of).collect(toList());
     }
 
     public List<ProductResponse> findByName(String name) {
         validateInformedData(isEmpty(name), "The product name must be informed.");
-        return productRepository.findByNameIgnoreCaseContaining(name).stream().map(ProductResponse::of).collect(Collectors.toList());
+        return productRepository.findByNameIgnoreCaseContaining(name).stream().map(ProductResponse::of).collect(toList());
     }
 
     public List<ProductResponse> findBySupplierId(Integer supplierId) {
         validateInformedData(isEmpty(supplierId), "The product supplier ID name must be informed.");
-        return productRepository.findBySupplierId(supplierId).stream().map(ProductResponse::of).collect(Collectors.toList());
+        return productRepository.findBySupplierId(supplierId).stream().map(ProductResponse::of).collect(toList());
     }
 
     public ProductResponse findByIdResponse(Integer id) {
@@ -95,7 +105,7 @@ public class ProductService {
 
     public List<ProductResponse> findByCategoryId(Integer categoryId) {
         validateInformedData(isEmpty(categoryId), "The product category ID name must be informed.");
-        return productRepository.findByCategoryId(categoryId).stream().map(ProductResponse::of).collect(Collectors.toList());
+        return productRepository.findByCategoryId(categoryId).stream().map(ProductResponse::of).collect(toList());
     }
 
     private void validateInformedData(boolean data, String msg) {
@@ -119,7 +129,40 @@ public class ProductService {
     }
 
     public void updateProductStock(ProductStockDTO dto) {
+        try {
+            validateStockUpdateData(dto);
+            updateStock(dto);
+        } catch (Exception exception) {
+            log.error("Error while trying to update stock for message with error: {}", exception.getMessage(), exception);
+            var rejectedMessage = new SalesConfirmationDTO(dto.getSalesId(), SalesStatus.REJECTED);
+            salesConfirmationSender.sendConfirmationMessage(rejectedMessage);
+        }
+    }
 
+    @Transactional
+    private void updateStock(ProductStockDTO dto) {
+        var productsForUpdate = new ArrayList<Product>();
+        dto.getProducts().forEach(salesProduct -> {
+            var existingProduct = findById(salesProduct.getProductId());
+            validateInformedData(salesProduct.getQuantity() > existingProduct.getQuantityAvailable(), "The product "+existingProduct.getId()+" is out of stock.");
+            existingProduct.updateStock(salesProduct.getQuantity());
+            productsForUpdate.add(existingProduct);
+        });
+
+        if(!isEmpty(productsForUpdate)) {
+            productRepository.saveAll(productsForUpdate);
+            var approvedMessage = new SalesConfirmationDTO(dto.getSalesId(), SalesStatus.APPROVED);
+            salesConfirmationSender.sendConfirmationMessage(approvedMessage);
+        }
+    }
+
+    private void validateStockUpdateData(ProductStockDTO dto) {
+        validateInformedData(isEmpty(dto) || isEmpty(dto.getSalesId()), "The product data and the sales ID must be informed");
+        validateInformedData(isEmpty(dto.getProducts()), "The product data or sales ID cannot be null");
+
+        dto.getProducts()
+                .forEach(salesProduct ->
+                        validateInformedData(isEmpty(salesProduct.getQuantity()) || isEmpty(salesProduct.getProductId()), "The product ID and the quantity must be informed."));
     }
 
 }

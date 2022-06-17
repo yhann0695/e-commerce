@@ -4,10 +4,7 @@ import br.com.product.api.productapi.configuration.exception.SuccessResponse;
 import br.com.product.api.productapi.configuration.exception.ValidationException;
 import br.com.product.api.productapi.modules.category.model.Category;
 import br.com.product.api.productapi.modules.category.service.CategoryService;
-import br.com.product.api.productapi.modules.product.dto.ProductRequest;
-import br.com.product.api.productapi.modules.product.dto.ProductResponse;
-import br.com.product.api.productapi.modules.product.dto.ProductSalesResponse;
-import br.com.product.api.productapi.modules.product.dto.ProductStockDTO;
+import br.com.product.api.productapi.modules.product.dto.*;
 import br.com.product.api.productapi.modules.product.model.Product;
 import br.com.product.api.productapi.modules.product.repository.ProductRepository;
 import br.com.product.api.productapi.modules.product.sales.client.SalesClient;
@@ -114,9 +111,7 @@ public class ProductService {
     }
 
     private void validateInformedData(boolean data, String msg) {
-        if(data) {
-            throw new ValidationException(msg);
-        }
+        if(data) throw new ValidationException(msg);
     }
 
     public boolean existsByCategoryId(Integer categoryId) {
@@ -183,4 +178,15 @@ public class ProductService {
         }
     }
 
+    public SuccessResponse checkProductsStock(ProductCheckStockRequest request) {
+        validateInformedData(isEmpty(request) || isEmpty(request.getProductsQuantity()), "The request data and product must be informed");
+        request.getProductsQuantity().forEach(this::validateCheck);
+        return SuccessResponse.create("The stock is ok.");
+    }
+
+    private void validateCheck(ProductQuantityDTO dto) {
+        validateInformedData(isEmpty(dto.getProductId()) || isEmpty(dto.getQuantity()), "Product ID and quantity must be informed.");
+        var entity = findById(dto.getProductId());
+        validateInformedData(dto.getQuantity() > entity.getQuantityAvailable(), "The product "+entity.getId()+" is out of stock.");
+    }
 }

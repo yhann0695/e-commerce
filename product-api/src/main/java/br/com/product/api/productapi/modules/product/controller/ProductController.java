@@ -1,6 +1,7 @@
 package br.com.product.api.productapi.modules.product.controller;
 
 import br.com.product.api.productapi.configuration.exception.SuccessResponse;
+import br.com.product.api.productapi.modules.product.dto.ProductCheckStockRequest;
 import br.com.product.api.productapi.modules.product.dto.ProductRequest;
 import br.com.product.api.productapi.modules.product.dto.ProductResponse;
 import br.com.product.api.productapi.modules.product.dto.ProductSalesResponse;
@@ -55,6 +56,11 @@ public class ProductController {
     @PutMapping("/{id}")
     public ProductResponse update(@RequestBody ProductRequest request, @PathVariable Integer id) {
         return productService.update(request, id);
+    }
+
+    @PostMapping("/check-stock")
+    public SuccessResponse checkProductsStock(@RequestBody ProductCheckStockRequest request) {
+        return productService.checkProductsStock(request);
     }
 
     @GetMapping("/{id}/sales")

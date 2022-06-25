@@ -3,6 +3,7 @@ package br.com.product.api.productapi.configuration.interceptor;
 import br.com.product.api.productapi.configuration.exception.ValidationException;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
+import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import static java.util.Objects.requireNonNull;
 
+@Component
 public class FeignClientAuthInterceptor implements RequestInterceptor {
 
     private static final String AUTHORIZATION = "Authorization";
